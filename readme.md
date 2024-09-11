@@ -1,8 +1,8 @@
 # Follow these steps to convert HTML to PDF
 
-- Step 1 - install the pdf creator package using the following command
+- Step 1 - install the pdf generator package using the following command
 
-  `$ npm i pdf-creator-node --save`
+  `$ npm i pdf-generator-node --save`
 
   > --save flag adds package name to package.json file.
 
@@ -10,7 +10,7 @@
 
   ```javascript
   //Required package
-  var pdf = require("pdf-creator-node");
+  var pdf = require("pdf-generator-node");
   var fs = require("fs");
 
   // Read HTML Template
@@ -39,28 +39,22 @@
   </html>
   ```
 
-- Step 4 - Provide format and orientation as per your need
-
-  > "height": "10.5in", // allowed units: mm, cm, in, px
-
-  > "width": "8in", // allowed units: mm, cm, in, px
-
-  - or -
-
-  > "format": "Letter", // allowed units: A3, A4, A5, Legal, Letter, Tabloid
-
-  > "orientation": "portrait", // portrait or landscape
-
+- Step 4 - Provide pdf options
     ```javascript
         var options = {
             format: "A3",
-            orientation: "portrait",
-            border: "10mm",
-            header: {
+            landscape: false,
+            margin: {
+              top:"10mm",
+              bottom:"10mm",
+              left:"10mm",
+              right:"10mm"
+            },
+            headerTemplate: {
                 height: "45mm",
                 contents: '<div style="text-align: center;">Author: Shyam Hajare</div>'
             },
-            footer: {
+            footerTemplate: {
                 height: "28mm",
                 contents: {
                     first: 'Cover page',
@@ -95,9 +89,8 @@
       users: users,
     },
     path: "./output.pdf",
-    type: "",
+    type: "buffer", // buffer || stream
   };
-  // By default a file is created but you could switch between Buffer and Streams by using "buffer" or "stream" respectively.
   ```
 
 - Step 6 - After setting all parameters, just pass document and options to `pdf.create` method.
