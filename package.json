@@ -47,6 +47,6 @@
   "license": "MIT",
   "dependencies": {
     "handlebars": "^4.7.8",
-    "wkhtmltopdf": "^0.4.0"
+    "puppeteer-html-pdf": "^4.0.8"
   }
 }

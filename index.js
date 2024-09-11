@@ -9,7 +9,7 @@
  */
 
 var Handlebars = require("handlebars");
-var pdf = require("wkhtmltopdf");
+var PuppeteerHTMLPDF = require("puppeteer-html-pdf");
 
 Handlebars.registerHelper("ifCond", function (v1, operator, v2, options) {
   switch (operator) {
@@ -39,16 +39,37 @@ Handlebars.registerHelper("ifCond", function (v1, operator, v2, options) {
 });
 
 var create = function (document, options) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (!document || !document.html || !document.data) {
       reject(new Error("Some, or all, options are missing."));
     }
     // Compiles a template
     var html = Handlebars.compile(document.html)(document.data);
-    pdf(html, options, (err, stream) => {
-      if (!err) resolve(stream);
-      else reject(err);
-    });
+    const htmlPDF = new PuppeteerHTMLPDF();
+    htmlPDF.setOptions(options);
+    const pdfPromise = htmlPDF.create(html);
+
+    switch (document.type) {
+      case "buffer":
+        resolve(pdfPromise)
+        break;
+
+      case "stream":
+        const pdfBuffer = await pdfPromise;
+        const stream = require('stream');
+        const readableStream = new stream.Readable({
+          read() {
+            this.push(pdfBuffer);
+            this.push(null);
+          }
+        });
+        resolve(readableStream);
+        break;
+
+      default:
+        resolve(htmlPDF.writeFile(pdfPromise, document.path))
+        break;
+    }
   });
 };
 
